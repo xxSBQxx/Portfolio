@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Syed Burhan Saqib — Network &amp; Cybersecurity Operations</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Google Fonts removed for full offline use; system fonts used instead -->
 <style>
   :root, :root[data-theme="dark"] {
     --bg: #0A0F24;
@@ -22,9 +20,9 @@
     --amber: #F2A65A;
     --violet: #7C83FD;
     --danger: #F2745A;
-    --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
-    --font-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
-    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+    --font-display: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-mono: 'SFMono-Regular', 'Consolas', 'Menlo', monospace;
     --safe-t: env(safe-area-inset-top, 0px);
     --safe-b: env(safe-area-inset-bottom, 0px);
   }
@@ -1048,7 +1046,7 @@
 <footer>
   <div class="wrap footer-inner">
     <span>© 2026 SYED BURHAN SAQIB</span>
-    <span>DOHA, QATAR · BUILT WITH CLAUDE</span>
+    <span>DOHA, QATAR</span>
   </div>
 </footer>
 
@@ -1379,25 +1377,17 @@
     return new Blob([byteArray], { type: mime });
   }
 
-  async function downloadResume() {
+  function downloadResume() {
     if (!cvBase64) return;
     var blob = base64ToBlob(cvBase64, 'application/pdf');
-    try {
-      var downloads = await claude.use('downloads');
-      if (downloads) {
-        try {
-          await downloads.save({ filename: 'Syed_Burhan_Saqib_CV.pdf', data: blob });
-          return;
-        } catch (err) {
-          // fall through to fallback on any rejection (declined, unavailable, etc.)
-        }
-      }
-    } catch (e) {
-      // claude global not present at all — fall through
-    }
-    // Fallback: open the PDF in a new tab so the viewer can save it manually.
     var url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Syed_Burhan_Saqib_CV.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   }
 
   var btn1 = document.getElementById('downloadBtnHero');
