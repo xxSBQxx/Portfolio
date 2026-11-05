@@ -1,6 +1,6 @@
 {
   "profile": {
-    "name": "Syed Burhan Saqib",
+    "name": "Syed Burhan Saqibb",
     "title": "Network Security & IT Infrastructure | SOC / NSOC | Networking",
     "email": "syed.burhan.saqib@outlook.com",
     "phone": "+974 5050 8610",
@@ -10,11 +10,26 @@
     "summary": "Network security and IT infrastructure professional (BSc Information Technology, 2026) currently deploying Vectra and Darktrace network detection platforms across multiple client and government environments at Malomatia. Audited 4+ data centers and supported Fortinet firewalls, VPNs, and LANs, with hands-on network cabling, configuration, and troubleshooting. Builds internal tools for restricted company environments. Targeting Network Engineer, Network Security, SOC/NSOC, and IT Infrastructure roles in Qatar."
   },
   "skills": [
-    { "label": "Network Security", "value": "Fortinet FortiGate firewalls, VPN, Vectra, Darktrace, NSOC monitoring, threat detection, incident analysis, access control" },
-    { "label": "Networking", "value": "TCP/IP, DHCP, DNS, VLANs, subnetting, routing & switching, OSPF, LAN, wireless, structured cabling" },
-    { "label": "Infrastructure & Systems", "value": "Data center asset auditing, network deployment, Windows Server (DNS, DHCP, Active Directory), VMware, VirtualBox" },
-    { "label": "Automation & Microsoft 365", "value": "PowerApps, Power Automate, SharePoint (Lists, REST API), OneDrive" },
-    { "label": "Tools", "value": "Wireshark, Cisco Packet Tracer, EVE-NG, AWS Console" }
+    {
+      "label": "Network Security",
+      "value": "Fortinet FortiGate firewalls, VPN, Vectra, Darktrace, NSOC monitoring, threat detection, incident analysis, access control"
+    },
+    {
+      "label": "Networking",
+      "value": "TCP/IP, DHCP, DNS, VLANs, subnetting, routing & switching, OSPF, LAN, wireless, structured cabling"
+    },
+    {
+      "label": "Infrastructure & Systems",
+      "value": "Data center asset auditing, network deployment, Windows Server (DNS, DHCP, Active Directory), VMware, VirtualBox"
+    },
+    {
+      "label": "Automation & Microsoft 365",
+      "value": "PowerApps, Power Automate, SharePoint (Lists, REST API), OneDrive"
+    },
+    {
+      "label": "Tools",
+      "value": "Wireshark, Cisco Packet Tracer, EVE-NG, AWS Console"
+    }
   ],
   "experience": [
     {
@@ -77,28 +92,204 @@
     }
   ],
   "certificates": [
-    { "title": "Threat Visualizer Part 1 — Familiarization", "vendor": "Darktrace", "category": "Security", "status": "completed", "date": "", "thumb": "", "file": "" },
-    { "title": "Threat Visualizer Part 2 — Investigation", "vendor": "Darktrace", "category": "Security", "status": "completed", "date": "", "thumb": "", "file": "" },
-    { "title": "Threat Visualizer Part 3 — Autonomous Response", "vendor": "Darktrace", "category": "Security", "status": "completed", "date": "", "thumb": "", "file": "" },
-    { "title": "Vectra Presales Security Engineer", "vendor": "Vectra", "category": "Security", "status": "completed", "date": "2026", "thumb": "", "file": "" },
-    { "title": "NSE 3 FortiGate 7.6 Operator", "vendor": "Fortinet", "category": "Security", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/fortinet-nse3-fortigate-operator.png", "file": "assets/certs/files/fortinet-nse3-fortigate-operator.pdf" },
-    { "title": "NSE 1 Fundamentals in Cybersecurity", "vendor": "Fortinet", "category": "Security", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/fortinet-nse1-fundamentals.png", "file": "assets/certs/files/fortinet-nse1-fundamentals.pdf" },
-    { "title": "Network Security Fundamentals", "vendor": "Palo Alto Networks", "category": "Security", "status": "completed", "date": "2023", "thumb": "", "file": "" },
-    { "title": "Cybersecurity Foundation", "vendor": "Palo Alto Networks", "category": "Security", "status": "completed", "date": "2023", "thumb": "", "file": "" },
-    { "title": "AWS Academy Cloud Foundations", "vendor": "AWS Academy", "category": "Cloud", "status": "completed", "date": "2024", "thumb": "assets/certs/thumbs/aws-cloud-foundations.png", "file": "assets/certs/files/aws-cloud-foundations.pdf" },
-    { "title": "Network Technician Career Path", "vendor": "Cisco Networking Academy", "category": "Networking", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-network-technician-career-path.png", "file": "assets/certs/files/cisco-network-technician-career-path.pdf" },
-    { "title": "Ethical Hacker", "vendor": "Cisco Networking Academy", "category": "Security", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-ethical-hacker.png", "file": "assets/certs/files/cisco-ethical-hacker.pdf" },
-    { "title": "Cyber Threat Management", "vendor": "Cisco Networking Academy", "category": "Security", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-cyber-threat-management.png", "file": "assets/certs/files/cisco-cyber-threat-management.pdf" },
-    { "title": "Industrial Networking Essentials", "vendor": "Cisco Networking Academy", "category": "Networking", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-industrial-networking-essentials.png", "file": "assets/certs/files/cisco-industrial-networking-essentials.pdf" },
-    { "title": "Introduction to Cybersecurity", "vendor": "Cisco Networking Academy", "category": "Security", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-intro-cybersecurity.png", "file": "assets/certs/files/cisco-intro-cybersecurity.pdf" },
-    { "title": "Linux Unhatched", "vendor": "Cisco Networking Academy", "category": "Systems", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-linux-unhatched.png", "file": "assets/certs/files/cisco-linux-unhatched.pdf" },
-    { "title": "Introduction to IoT and Digital Transformation", "vendor": "Cisco Networking Academy", "category": "Other", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-intro-iot-digital-transformation.png", "file": "assets/certs/files/cisco-intro-iot-digital-transformation.pdf" },
-    { "title": "Introduction to Modern AI", "vendor": "Cisco Networking Academy", "category": "Other", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-intro-modern-ai.png", "file": "assets/certs/files/cisco-intro-modern-ai.pdf" },
-    { "title": "Data Science Essentials with Python", "vendor": "Cisco Networking Academy", "category": "Other", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-data-science-essentials.png", "file": "assets/certs/files/cisco-data-science-essentials.pdf" },
-    { "title": "Digital Safety and Security Awareness", "vendor": "Cisco Networking Academy", "category": "Security", "status": "completed", "date": "2026", "thumb": "assets/certs/thumbs/cisco-digital-safety-security-awareness.png", "file": "assets/certs/files/cisco-digital-safety-security-awareness.pdf" },
-    { "title": "NMOQ Tour Guide Certificate", "vendor": "National Museum of Qatar", "category": "Other", "status": "completed", "date": "2023", "thumb": "assets/certs/thumbs/nmoq-tour-certificate.png", "file": "assets/certs/files/nmoq-tour-certificate.pdf" },
-    { "title": "Fortinet NSE 4", "vendor": "Fortinet", "category": "Security", "status": "in-progress", "date": "", "thumb": "", "file": "" },
-    { "title": "CompTIA Security+", "vendor": "CompTIA", "category": "Security", "status": "in-progress", "date": "", "thumb": "", "file": "" }
+    {
+      "title": "Threat Visualizer Part 1 — Familiarization",
+      "vendor": "Darktrace",
+      "category": "Security",
+      "status": "completed",
+      "date": "",
+      "thumb": "",
+      "file": ""
+    },
+    {
+      "title": "Threat Visualizer Part 2 — Investigation",
+      "vendor": "Darktrace",
+      "category": "Security",
+      "status": "completed",
+      "date": "",
+      "thumb": "",
+      "file": ""
+    },
+    {
+      "title": "Threat Visualizer Part 3 — Autonomous Response",
+      "vendor": "Darktrace",
+      "category": "Security",
+      "status": "completed",
+      "date": "",
+      "thumb": "",
+      "file": ""
+    },
+    {
+      "title": "Vectra Presales Security Engineer",
+      "vendor": "Vectra",
+      "category": "Security",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "",
+      "file": ""
+    },
+    {
+      "title": "NSE 3 FortiGate 7.6 Operator",
+      "vendor": "Fortinet",
+      "category": "Security",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/fortinet-nse3-fortigate-operator.png",
+      "file": "assets/certs/files/fortinet-nse3-fortigate-operator.pdf"
+    },
+    {
+      "title": "NSE 1 Fundamentals in Cybersecurity",
+      "vendor": "Fortinet",
+      "category": "Security",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/fortinet-nse1-fundamentals.png",
+      "file": "assets/certs/files/fortinet-nse1-fundamentals.pdf"
+    },
+    {
+      "title": "Network Security Fundamentals",
+      "vendor": "Palo Alto Networks",
+      "category": "Security",
+      "status": "completed",
+      "date": "2023",
+      "thumb": "",
+      "file": ""
+    },
+    {
+      "title": "Cybersecurity Foundation",
+      "vendor": "Palo Alto Networks",
+      "category": "Security",
+      "status": "completed",
+      "date": "2023",
+      "thumb": "",
+      "file": ""
+    },
+    {
+      "title": "AWS Academy Cloud Foundations",
+      "vendor": "AWS Academy",
+      "category": "Cloud",
+      "status": "completed",
+      "date": "2024",
+      "thumb": "assets/certs/thumbs/aws-cloud-foundations.png",
+      "file": "assets/certs/files/aws-cloud-foundations.pdf"
+    },
+    {
+      "title": "Network Technician Career Path",
+      "vendor": "Cisco Networking Academy",
+      "category": "Networking",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-network-technician-career-path.png",
+      "file": "assets/certs/files/cisco-network-technician-career-path.pdf"
+    },
+    {
+      "title": "Ethical Hacker",
+      "vendor": "Cisco Networking Academy",
+      "category": "Security",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-ethical-hacker.png",
+      "file": "assets/certs/files/cisco-ethical-hacker.pdf"
+    },
+    {
+      "title": "Cyber Threat Management",
+      "vendor": "Cisco Networking Academy",
+      "category": "Security",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-cyber-threat-management.png",
+      "file": "assets/certs/files/cisco-cyber-threat-management.pdf"
+    },
+    {
+      "title": "Industrial Networking Essentials",
+      "vendor": "Cisco Networking Academy",
+      "category": "Networking",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-industrial-networking-essentials.png",
+      "file": "assets/certs/files/cisco-industrial-networking-essentials.pdf"
+    },
+    {
+      "title": "Introduction to Cybersecurity",
+      "vendor": "Cisco Networking Academy",
+      "category": "Security",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-intro-cybersecurity.png",
+      "file": "assets/certs/files/cisco-intro-cybersecurity.pdf"
+    },
+    {
+      "title": "Linux Unhatched",
+      "vendor": "Cisco Networking Academy",
+      "category": "Systems",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-linux-unhatched.png",
+      "file": "assets/certs/files/cisco-linux-unhatched.pdf"
+    },
+    {
+      "title": "Introduction to IoT and Digital Transformation",
+      "vendor": "Cisco Networking Academy",
+      "category": "Other",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-intro-iot-digital-transformation.png",
+      "file": "assets/certs/files/cisco-intro-iot-digital-transformation.pdf"
+    },
+    {
+      "title": "Introduction to Modern AI",
+      "vendor": "Cisco Networking Academy",
+      "category": "Other",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-intro-modern-ai.png",
+      "file": "assets/certs/files/cisco-intro-modern-ai.pdf"
+    },
+    {
+      "title": "Data Science Essentials with Python",
+      "vendor": "Cisco Networking Academy",
+      "category": "Other",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-data-science-essentials.png",
+      "file": "assets/certs/files/cisco-data-science-essentials.pdf"
+    },
+    {
+      "title": "Digital Safety and Security Awareness",
+      "vendor": "Cisco Networking Academy",
+      "category": "Security",
+      "status": "completed",
+      "date": "2026",
+      "thumb": "assets/certs/thumbs/cisco-digital-safety-security-awareness.png",
+      "file": "assets/certs/files/cisco-digital-safety-security-awareness.pdf"
+    },
+    {
+      "title": "NMOQ Tour Guide Certificate",
+      "vendor": "National Museum of Qatar",
+      "category": "Other",
+      "status": "completed",
+      "date": "2023",
+      "thumb": "assets/certs/thumbs/nmoq-tour-certificate.png",
+      "file": "assets/certs/files/nmoq-tour-certificate.pdf"
+    },
+    {
+      "title": "Fortinet NSE 4",
+      "vendor": "Fortinet",
+      "category": "Security",
+      "status": "in-progress",
+      "date": "",
+      "thumb": "",
+      "file": ""
+    },
+    {
+      "title": "CompTIA Security+",
+      "vendor": "CompTIA",
+      "category": "Security",
+      "status": "in-progress",
+      "date": "",
+      "thumb": "",
+      "file": ""
+    }
   ],
   "projects": [
     {
@@ -143,14 +334,34 @@
     }
   ],
   "education": [
-    { "degree": "BSc, Information Technology", "org": "University of Doha for Science and Technology", "year": "2022 – 2026" },
-    { "degree": "High School Diploma", "org": "Pakistan International School", "year": "2020 – 2022" }
+    {
+      "degree": "BSc, Information Technology",
+      "org": "University of Doha for Science and Technology",
+      "year": "2022 – 2026"
+    },
+    {
+      "degree": "High School Diploma",
+      "org": "Pakistan International School",
+      "year": "2020 – 2022"
+    }
   ],
   "languages": [
-    { "name": "English", "level": "Fluent" },
-    { "name": "Urdu / Hindi", "level": "Native" },
-    { "name": "Punjabi", "level": "Native" },
-    { "name": "Arabic", "level": "Basic" }
+    {
+      "name": "English",
+      "level": "Fluent"
+    },
+    {
+      "name": "Urdu / Hindi",
+      "level": "Native"
+    },
+    {
+      "name": "Punjabi",
+      "level": "Native"
+    },
+    {
+      "name": "Arabic",
+      "level": "Basic"
+    }
   ],
   "leadership": {
     "title": "Mental Health Ambassador",
