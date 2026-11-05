@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio Admin — Syed Burhan Saqib</title>
+<style>
+  :root {
+    --bg:#0A0F24; --panel:#10173A; --panel-2:#141D47; --hair:rgba(142,155,199,.18);
+    --text:#EAF0FF; --text-muted:#8E9BC7; --text-dim:#5C6790;
+    --cyan:#52D3D8; --cyan-dim:rgba(82,211,216,.35); --amber:#F2A65A; --red:#F2745A; --green:#52D98A;
+    --font: 'Segoe UI', system-ui, sans-serif; --mono: Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.5; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 80px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  h2 { font-size: 1.05rem; color: var(--cyan); margin: 36px 0 14px; border-bottom: 1px solid var(--hair); padding-bottom: 8px; }
+  .sub { color: var(--text-dim); font-size: 13px; margin: 0 0 20px; }
+  label { display:block; font-size:12px; color: var(--text-muted); margin: 10px 0 4px; }
+  input, textarea, select { width:100%; background: var(--panel); border:1px solid var(--hair); color: var(--text);
+    border-radius:6px; padding:9px 11px; font-family: var(--font); font-size: 13.5px; }
+  textarea { resize: vertical; min-height: 56px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--cyan-dim); }
+  .card { background: var(--panel); border:1px solid var(--hair); border-radius: 10px; padding: 16px 18px; margin-bottom: 12px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  .row > * { flex:1; min-width: 160px; }
+  .btn { font-family: var(--mono); font-size: 12.5px; padding: 8px 14px; border-radius: 5px; border:1px solid var(--hair);
+    background: transparent; color: var(--text); cursor:pointer; }
+  .btn:hover { border-color: var(--cyan-dim); }
+  .btn.primary { background: var(--cyan); color:#05262a; border-color: var(--cyan); font-weight:600; }
+  .btn.danger { border-color: rgba(242,116,90,.5); color: var(--red); }
+  .btn.small { padding:5px 9px; font-size:11px; }
+  .item-actions { display:flex; gap:6px; margin-top:10px; }
+  .bullets { margin: 6px 0; }
+  .bullet-row { display:flex; gap:6px; margin-bottom:6px; }
+  .bullet-row input { flex:1; }
+  .topbar { position: sticky; top:0; background: rgba(10,15,36,.95); backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--hair); padding: 14px 20px; display:flex; justify-content: space-between;
+    align-items:center; gap:12px; flex-wrap:wrap; z-index: 50; }
+  .status { font-family: var(--mono); font-size: 11.5px; color: var(--green); }
+  #gate { min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+  #gate input { max-width: 260px; }
+  .thumb-prev { width:80px; height:60px; object-fit:cover; border-radius:6px; border:1px solid var(--hair); background:var(--panel-2); }
+  .cat-badge { font-family: var(--mono); font-size:10.5px; color:var(--cyan); }
+  .hint { font-size:11.5px; color: var(--text-dim); margin-top:3px; }
+  .section-toggle { cursor:pointer; user-select:none; }
+  #app { display:none; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>🔒 Portfolio Admin</h1>
+  <p class="sub">Enter the admin password to continue.</p>
+  <input type="password" id="pw" placeholder="Password">
+  <button class="btn primary" id="pwSubmit">Unlock</button>
+  <p class="hint" id="gateMsg"></p>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div><strong>Portfolio CMS</strong> <span class="status" id="statusMsg">● draft saved locally</span></div>
+    <div class="row" style="flex:none;">
+      <a class="btn" href="index.html" target="_blank">View site ↗</a>
+      <button class="btn" id="logoutBtn">Log out</button>
+      <button class="btn" id="resetBtn">Reset to live data.json</button>
+      <button class="btn" id="exportBtn">Export data.json</button>
+      <button class="btn" id="saveBtn">Save Draft (preview)</button>
+      <button class="btn primary" id="publishBtn">Publish to GitHub</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <p class="sub"><strong>Save Draft</strong> previews changes on this browser only. <strong>Publish to GitHub</strong> commits them directly to your repository so the live site updates for everyone. <strong>Export data.json</strong> is a manual backup/alternative. See full setup notes at the bottom.</p>
+
+    <h2>Profile &amp; Summary</h2>
+    <div class="card" id="profileCard"></div>
+
+    <h2>Core Skills <button class="btn small" id="addSkill">+ Add</button></h2>
+    <div id="skillsList"></div>
+
+    <h2>Professional Experience <button class="btn small" id="addExp">+ Add</button></h2>
+    <div id="expList"></div>
+
+    <h2>Certificates <button class="btn small" id="addCert">+ Add</button></h2>
+    <div id="certList"></div>
+
+    <h2>Projects <button class="btn small" id="addProj">+ Add</button></h2>
+    <div id="projList"></div>
+
+    <h2>Education <button class="btn small" id="addEdu">+ Add</button></h2>
+    <div id="eduList"></div>
+
+    <h2>Languages <button class="btn small" id="addLang">+ Add</button></h2>
+    <div id="langList"></div>
+
+    <h2>Leadership</h2>
+    <div class="card" id="leaderCard"></div>
+
+    <h2>Setup &amp; Security Notes</h2>
+    <div class="card" style="font-size:13px; color:var(--text-muted); line-height:1.7;">
+      <p><strong>How this works:</strong> login is verified by a small Cloudflare Worker that holds your real password (as a hash) and your GitHub token as server-side secrets — neither ever reaches this page or your browser's dev tools. A correct login returns a short-lived signed session token (2 hours).</p>
+      <p><strong>Save Draft</strong> stores your edits in this browser's <code>localStorage</code> for an instant local preview only — nothing is sent anywhere.</p>
+      <p><strong>Publish to GitHub</strong> sends your session token + the changed files to the Worker, which verifies the token, then uses the GitHub API to commit <code>data.json</code> (and any newly uploaded certificate images/PDFs, auto-placed under <code>assets/certs/</code>) directly to your repository in one atomic commit. GitHub Pages then rebuilds <code>syedburhanss.online</code> automatically — allow roughly 30–90 seconds.</p>
+      <p><strong>To enable this</strong>, you must first deploy the Worker and set <code>WORKER_URL</code> near the top of this file's script — see the full setup instructions provided with this delivery.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // Set this to your deployed Worker URL (see worker/README-SETUP.md).
+  var WORKER_URL = 'https://portfolio-admin.YOUR-SUBDOMAIN.workers.dev';
+  var LS_KEY = 'portfolio_cms_data';
+  var SESSION_KEY = 'admin_session_token';
+  var data = null;
+
+  /* ---------- gate: real server-verified login ---------- */
+  function getSession() {
+    try {
+      var raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      var exp = Number(raw.split('.')[0]);
+      if (!exp || exp < Date.now()) return null;
+      return raw;
+    } catch (e) { return null; }
+  }
+  document.getElementById('pwSubmit').addEventListener('click', tryUnlock);
+  document.getElementById('pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
+  function tryUnlock() {
+    var val = document.getElementById('pw').value;
+    var btn = document.getElementById('pwSubmit');
+    btn.disabled = true; btn.textContent = 'Checking…';
+    fetch(WORKER_URL + '/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: val }),
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = 'Unlock';
+        if (res.ok && res.j.token) { sessionStorage.setItem(SESSION_KEY, res.j.token); boot(); }
+        else { document.getElementById('gateMsg').textContent = res.j.error || 'Incorrect password.'; }
+      })
+      .catch(function () {
+        btn.disabled = false; btn.textContent = 'Unlock';
+        document.getElementById('gateMsg').textContent = 'Could not reach the admin server. Check WORKER_URL in admin.html and your connection.';
+      });
+  }
+  document.getElementById('logoutBtn') && document.getElementById('logoutBtn').addEventListener('click', function () {
+    sessionStorage.removeItem(SESSION_KEY); location.reload();
+  });
+  if (getSession()) boot();
+
+  function boot() {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadData().then(function (d) { data = d; renderAll(); });
+  }
+
+  function loadData() {
+    try {
+      var override = localStorage.getItem(LS_KEY);
+      if (override) return Promise.resolve(JSON.parse(override));
+    } catch (e) {}
+    return fetch('data.json').then(function (r) { return r.json(); });
+  }
+
+  function save() {
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+    var s = document.getElementById('statusMsg');
+    s.textContent = '● draft saved — previewing on this browser only';
+    setTimeout(function () { s.textContent = '● draft saved locally'; }, 2500);
+  }
+
+  document.getElementById('saveBtn').addEventListener('click', function () { save(); });
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    if (!confirm('Discard local edits and reload from the live data.json?')) return;
+    localStorage.removeItem(LS_KEY);
+    fetch('data.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { data = d; renderAll(); });
+  });
+
+  /* ---------- Publish to GitHub (via Worker) ---------- */
+  function slugify(s) {
+    return (s || 'file').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 48) || 'file';
+  }
+  function extFromDataURL(durl) {
+    var m = /^data:([^;]+);base64,/.exec(durl);
+    var mime = m ? m[1] : '';
+    if (mime === 'image/png') return 'png';
+    if (mime === 'image/jpeg') return 'jpg';
+    if (mime === 'image/webp') return 'webp';
+    if (mime === 'application/pdf') return 'pdf';
+    return 'bin';
+  }
+  function b64EncodeUnicode(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (_, p1) { return String.fromCharCode('0x' + p1); }));
+  }
+
+  document.getElementById('publishBtn').addEventListener('click', function () {
+    var session = getSession();
+    if (!session) { alert('Your session expired — please log out and log back in.'); return; }
+    if (!confirm('Publish all current changes to GitHub now? This updates the live site.')) return;
+
+    var publishBtn = document.getElementById('publishBtn');
+    var status = document.getElementById('statusMsg');
+    publishBtn.disabled = true; status.textContent = '● publishing…';
+
+    var dataCopy = JSON.parse(JSON.stringify(data));
+    var filesToCommit = [];
+    var usedPaths = {};
+
+    (dataCopy.certificates || []).forEach(function (c, i) {
+      ['thumb', 'file'].forEach(function (key) {
+        var val = c[key];
+        if (val && val.indexOf('data:') === 0) {
+          var ext = extFromDataURL(val);
+          var dir = key === 'thumb' ? 'assets/certs/thumbs/' : 'assets/certs/files/';
+          var base = slugify(c.title) + (key === 'file' ? '-doc' : '');
+          var path = dir + base + '.' + ext;
+          var n = 1;
+          while (usedPaths[path]) { path = dir + base + '-' + (++n) + '.' + ext; }
+          usedPaths[path] = true;
+          filesToCommit.push({ path: path, content_base64: val.split(',')[1] });
+          c[key] = path;
+        }
+      });
+    });
+
+    filesToCommit.push({ path: 'data.json', content_base64: b64EncodeUnicode(JSON.stringify(dataCopy, null, 2)) });
+
+    fetch(WORKER_URL + '/publish', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: session, message: 'Update portfolio content via admin CMS', files: filesToCommit }),
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        publishBtn.disabled = false;
+        if (res.ok && res.j.ok) {
+          data = dataCopy;
+          localStorage.removeItem(LS_KEY);
+          renderAll();
+          status.textContent = '● published — commit ' + res.j.commit.slice(0, 7);
+          alert('Published! Commit ' + res.j.commit.slice(0, 7) + '. The live site updates once GitHub Pages finishes rebuilding (usually under a minute).');
+        } else {
+          status.textContent = '● publish failed';
+          alert('Publish failed: ' + (res.j && res.j.error ? res.j.error : 'unknown error'));
+        }
+      })
+      .catch(function (e) {
+        publishBtn.disabled = false; status.textContent = '● publish failed';
+        alert('Publish failed: ' + e.message);
+      });
+  });
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'data.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+
+  function el(tag, attrs, html) {
+    var e = document.createElement(tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  }
+  function input(value, oninput, placeholder) {
+    var i = document.createElement('input');
+    i.value = value || ''; i.placeholder = placeholder || '';
+    i.addEventListener('input', function () { oninput(i.value); });
+    return i;
+  }
+  function textarea(value, oninput, placeholder) {
+    var t = document.createElement('textarea');
+    t.value = value || ''; t.placeholder = placeholder || '';
+    t.addEventListener('input', function () { oninput(t.value); });
+    return t;
+  }
+  function moveBtns(arr, idx, rerender) {
+    var wrap = document.createElement('div');
+    wrap.className = 'item-actions';
+    var up = el('button', { class: 'btn small' }, '↑ Up');
+    up.onclick = function () { if (idx > 0) { arr.splice(idx - 1, 0, arr.splice(idx, 1)[0]); rerender(); } };
+    var down = el('button', { class: 'btn small' }, '↓ Down');
+    down.onclick = function () { if (idx < arr.length - 1) { arr.splice(idx + 1, 0, arr.splice(idx, 1)[0]); rerender(); } };
+    var del = el('button', { class: 'btn small danger' }, '🗑 Delete');
+    del.onclick = function () { if (confirm('Delete this item?')) { arr.splice(idx, 1); rerender(); } };
+    wrap.appendChild(up); wrap.appendChild(down); wrap.appendChild(del);
+    return wrap;
+  }
+  function bulletsEditor(bullets, rerender) {
+    var box = document.createElement('div'); box.className = 'bullets';
+    bullets.forEach(function (b, bi) {
+      var row = document.createElement('div'); row.className = 'bullet-row';
+      row.appendChild(input(b, function (v) { bullets[bi] = v; }, 'Bullet point'));
+      var rm = el('button', { class: 'btn small danger' }, '✕');
+      rm.onclick = function () { bullets.splice(bi, 1); rerender(); };
+      row.appendChild(rm);
+      box.appendChild(row);
+    });
+    var add = el('button', { class: 'btn small' }, '+ Bullet');
+    add.onclick = function () { bullets.push(''); rerender(); };
+    box.appendChild(add);
+    return box;
+  }
+
+  /* ---------- Profile ---------- */
+  function renderProfile() {
+    var c = document.getElementById('profileCard'); c.innerHTML = '';
+    var p = data.profile;
+    var fields = [
+      ['name', 'Full Name'], ['title', 'Headline / Title'], ['email', 'Email'],
+      ['phone', 'Phone'], ['location', 'Location'], ['linkedin', 'LinkedIn URL'], ['github', 'GitHub URL']
+    ];
+    fields.forEach(function (f) {
+      c.appendChild(el('label', {}, f[1]));
+      c.appendChild(input(p[f[0]], function (v) { p[f[0]] = v; }));
+    });
+    c.appendChild(el('label', {}, 'Professional Summary'));
+    c.appendChild(textarea(p.summary, function (v) { p.summary = v; }));
+  }
+
+  /* ---------- Skills ---------- */
+  function renderSkills() {
+    var box = document.getElementById('skillsList'); box.innerHTML = '';
+    data.skills.forEach(function (s, i) {
+      var card = el('div', { class: 'card' });
+      card.appendChild(el('label', {}, 'Category Label'));
+      card.appendChild(input(s.label, function (v) { s.label = v; }));
+      card.appendChild(el('label', {}, 'Skills (comma-separated)'));
+      card.appendChild(textarea(s.value, function (v) { s.value = v; }));
+      card.appendChild(moveBtns(data.skills, i, renderSkills));
+      box.appendChild(card);
+    });
+  }
+  document.getElementById('addSkill').onclick = function () { data.skills.push({ label: 'New Category', value: '' }); renderSkills(); };
+
+  /* ---------- Experience ---------- */
+  function renderExp() {
+    var box = document.getElementById('expList'); box.innerHTML = '';
+    data.experience.forEach(function (j, i) {
+      var card = el('div', { class: 'card' });
+      var row = el('div', { class: 'row' });
+      var c1 = document.createElement('div');
+      c1.appendChild(el('label', {}, 'Role'));
+      c1.appendChild(input(j.role, function (v) { j.role = v; }));
+      var c2 = document.createElement('div');
+      c2.appendChild(el('label', {}, 'Organization'));
+      c2.appendChild(input(j.org, function (v) { j.org = v; }));
+      var c3 = document.createElement('div');
+      c3.appendChild(el('label', {}, 'Dates'));
+      c3.appendChild(input(j.date, function (v) { j.date = v; }));
+      row.appendChild(c1); row.appendChild(c2); row.appendChild(c3);
+      card.appendChild(row);
+      card.appendChild(el('label', {}, 'Bullet points'));
+      card.appendChild(bulletsEditor(j.bullets, renderExp));
+      card.appendChild(moveBtns(data.experience, i, renderExp));
+      box.appendChild(card);
+    });
+  }
+  document.getElementById('addExp').onclick = function () {
+    data.experience.push({ role: 'New Role', org: '', date: '', bullets: [''] }); renderExp();
+  };
+
+  /* ---------- Certificates ---------- */
+  function fileToDataURL(file) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () { resolve(r.result); };
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+  function renderCerts() {
+    var box = document.getElementById('certList'); box.innerHTML = '';
+    data.certificates.forEach(function (c, i) {
+      var card = el('div', { class: 'card' });
+      var row = el('div', { class: 'row' });
+      var c1 = document.createElement('div');
+      c1.appendChild(el('label', {}, 'Title'));
+      c1.appendChild(input(c.title, function (v) { c.title = v; }));
+      var c2 = document.createElement('div');
+      c2.appendChild(el('label', {}, 'Vendor'));
+      c2.appendChild(input(c.vendor, function (v) { c.vendor = v; }));
+      var c3 = document.createElement('div');
+      c3.appendChild(el('label', {}, 'Date'));
+      c3.appendChild(input(c.date, function (v) { c.date = v; }));
+      row.appendChild(c1); row.appendChild(c2); row.appendChild(c3);
+      card.appendChild(row);
+
+      var row2 = el('div', { class: 'row' });
+      var c4 = document.createElement('div');
+      c4.appendChild(el('label', {}, 'Category'));
+      var sel = document.createElement('select');
+      ['Security', 'Networking', 'Cloud', 'Systems', 'Other'].forEach(function (opt) {
+        var o = document.createElement('option'); o.value = opt; o.textContent = opt;
+        if (c.category === opt) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', function () { c.category = sel.value; });
+      c4.appendChild(sel);
+      var c5 = document.createElement('div');
+      c5.appendChild(el('label', {}, 'Status'));
+      var sel2 = document.createElement('select');
+      [['completed', 'Completed'], ['in-progress', 'In Progress']].forEach(function (opt) {
+        var o = document.createElement('option'); o.value = opt[0]; o.textContent = opt[1];
+        if (c.status === opt[0]) o.selected = true;
+        sel2.appendChild(o);
+      });
+      sel2.addEventListener('change', function () { c.status = sel2.value; });
+      c5.appendChild(sel2);
+      row2.appendChild(c4); row2.appendChild(c5);
+      card.appendChild(row2);
+
+      card.appendChild(el('label', {}, 'Certificate image (thumbnail shown on site) or PDF'));
+      var fileRow = document.createElement('div'); fileRow.className = 'row';
+      var preview = el('img', { class: 'thumb-prev', style: 'flex:none;' });
+      preview.src = c.thumb || '';
+      preview.style.display = c.thumb ? 'block' : 'none';
+      var fi = document.createElement('input'); fi.type = 'file'; fi.accept = 'image/*,application/pdf';
+      fi.addEventListener('change', function () {
+        var file = fi.files[0]; if (!file) return;
+        fileToDataURL(file).then(function (durl) {
+          if (file.type === 'application/pdf') {
+            c.file = durl;
+          } else {
+            c.thumb = durl; c.file = c.file || durl;
+            preview.src = durl; preview.style.display = 'block';
+          }
+        });
+      });
+      fileRow.appendChild(preview); fileRow.appendChild(fi);
+      card.appendChild(fileRow);
+      card.appendChild(el('p', { class: 'hint' }, 'Uploading replaces the preview image and/or the linked file for this certificate. Existing certificates already link to files extracted from your ZIP.'));
+
+      card.appendChild(moveBtns(data.certificates, i, renderCerts));
+      box.appendChild(card);
+    });
+  }
+  document.getElementById('addCert').onclick = function () {
+    data.certificates.push({ title: 'New Certificate', vendor: '', category: 'Other', status: 'completed', date: '', thumb: '', file: '' });
+    renderCerts();
+  };
+
+  /* ---------- Projects ---------- */
+  function renderProj() {
+    var box = document.getElementById('projList'); box.innerHTML = '';
+    data.projects.forEach(function (pr, i) {
+      var card = el('div', { class: 'card' });
+      var row = el('div', { class: 'row' });
+      var c1 = document.createElement('div');
+      c1.appendChild(el('label', {}, 'Title'));
+      c1.appendChild(input(pr.title, function (v) { pr.title = v; }));
+      var c2 = document.createElement('div');
+      c2.appendChild(el('label', {}, 'Year'));
+      c2.appendChild(input(pr.year, function (v) { pr.year = v; }));
+      row.appendChild(c1); row.appendChild(c2);
+      card.appendChild(row);
+      card.appendChild(el('label', {}, 'Tech stack'));
+      card.appendChild(input(pr.stack, function (v) { pr.stack = v; }));
+      card.appendChild(el('label', {}, 'Bullet points'));
+      card.appendChild(bulletsEditor(pr.bullets, renderProj));
+      var fullLbl = el('label', {}, '');
+      var cb = document.createElement('input'); cb.type = 'checkbox'; cb.style.width = 'auto'; cb.checked = !!pr.full;
+      cb.addEventListener('change', function () { pr.full = cb.checked; });
+      fullLbl.appendChild(cb);
+      fullLbl.appendChild(document.createTextNode(' Full-width card'));
+      card.appendChild(fullLbl);
+      card.appendChild(moveBtns(data.projects, i, renderProj));
+      box.appendChild(card);
+    });
+  }
+  document.getElementById('addProj').onclick = function () {
+    data.projects.push({ year: '', title: 'New Project', stack: '', bullets: [''], full: false }); renderProj();
+  };
+
+  /* ---------- Education ---------- */
+  function renderEdu() {
+    var box = document.getElementById('eduList'); box.innerHTML = '';
+    data.education.forEach(function (e, i) {
+      var card = el('div', { class: 'card' });
+      var row = el('div', { class: 'row' });
+      var c1 = document.createElement('div'); c1.appendChild(el('label', {}, 'Degree')); c1.appendChild(input(e.degree, function (v) { e.degree = v; }));
+      var c2 = document.createElement('div'); c2.appendChild(el('label', {}, 'Institution')); c2.appendChild(input(e.org, function (v) { e.org = v; }));
+      var c3 = document.createElement('div'); c3.appendChild(el('label', {}, 'Years')); c3.appendChild(input(e.year, function (v) { e.year = v; }));
+      row.appendChild(c1); row.appendChild(c2); row.appendChild(c3);
+      card.appendChild(row);
+      card.appendChild(moveBtns(data.education, i, renderEdu));
+      box.appendChild(card);
+    });
+  }
+  document.getElementById('addEdu').onclick = function () { data.education.push({ degree: '', org: '', year: '' }); renderEdu(); };
+
+  /* ---------- Languages ---------- */
+  function renderLang() {
+    var box = document.getElementById('langList'); box.innerHTML = '';
+    data.languages.forEach(function (l, i) {
+      var card = el('div', { class: 'card' });
+      var row = el('div', { class: 'row' });
+      var c1 = document.createElement('div'); c1.appendChild(el('label', {}, 'Language')); c1.appendChild(input(l.name, function (v) { l.name = v; }));
+      var c2 = document.createElement('div'); c2.appendChild(el('label', {}, 'Level')); c2.appendChild(input(l.level, function (v) { l.level = v; }));
+      row.appendChild(c1); row.appendChild(c2);
+      card.appendChild(row);
+      card.appendChild(moveBtns(data.languages, i, renderLang));
+      box.appendChild(card);
+    });
+  }
+  document.getElementById('addLang').onclick = function () { data.languages.push({ name: '', level: '' }); renderLang(); };
+
+  /* ---------- Leadership ---------- */
+  function renderLeader() {
+    var c = document.getElementById('leaderCard'); c.innerHTML = '';
+    var l = data.leadership || (data.leadership = { title: '', org: '', year: '', note: '' });
+    var row = el('div', { class: 'row' });
+    var c1 = document.createElement('div'); c1.appendChild(el('label', {}, 'Role')); c1.appendChild(input(l.title, function (v) { l.title = v; }));
+    var c2 = document.createElement('div'); c2.appendChild(el('label', {}, 'Organization')); c2.appendChild(input(l.org, function (v) { l.org = v; }));
+    var c3 = document.createElement('div'); c3.appendChild(el('label', {}, 'Years')); c3.appendChild(input(l.year, function (v) { l.year = v; }));
+    row.appendChild(c1); row.appendChild(c2); row.appendChild(c3);
+    c.appendChild(row);
+    c.appendChild(el('label', {}, 'Note'));
+    c.appendChild(textarea(l.note, function (v) { l.note = v; }));
+  }
+
+  function renderAll() {
+    renderProfile(); renderSkills(); renderExp(); renderCerts(); renderProj(); renderEdu(); renderLang(); renderLeader();
+  }
+})();
+</script>
+</body></html>
