@@ -1,0 +1,66 @@
+name: Publish portfolio content
+
+# Triggered by admin.html via the GitHub API:
+#   POST /repos/{owner}/{repo}/dispatches
+#   { "event_type": "publish-content", "client_payload": { "message": "...", "files": [ { "path": "...", "content_base64": "..." }, ... ] } }
+#
+# Runs on the repo's default branch. Writes each file, refuses to commit if
+# data.json isn't valid JSON, then commits and pushes using the automatic
+# GITHUB_TOKEN — no secrets to configure.
+
+on:
+  repository_dispatch:
+    types: [publish-content]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write files from payload
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const files = context.payload.client_payload.files || [];
+            if (!Array.isArray(files) || files.length === 0) {
+              core.setFailed('No files in client_payload.');
+              return;
+            }
+            for (const f of files) {
+              if (!f.path || typeof f.content_base64 !== 'string') {
+                core.setFailed('Malformed file entry: ' + JSON.stringify(f).slice(0, 200));
+                return;
+              }
+              // keep writes inside the repo checkout
+              const resolved = path.resolve(f.path);
+              if (!resolved.startsWith(process.cwd())) {
+                core.setFailed('Refusing path outside repo: ' + f.path);
+                return;
+              }
+              const buf = Buffer.from(f.content_base64, 'base64');
+              if (f.path === 'data.json') {
+                try { JSON.parse(buf.toString('utf8')); }
+                catch (e) { core.setFailed('data.json in payload is not valid JSON: ' + e.message); return; }
+              }
+              fs.mkdirSync(path.dirname(resolved), { recursive: true });
+              fs.writeFileSync(resolved, buf);
+              core.info('Wrote ' + f.path + ' (' + buf.length + ' bytes)');
+            }
+
+      - name: Commit and push
+        run: |
+          git config user.name "portfolio-admin-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing changed, skipping commit."
+            exit 0
+          fi
+          git commit -m "${{ github.event.client_payload.message || 'Update portfolio content via admin CMS' }}"
+          git push
