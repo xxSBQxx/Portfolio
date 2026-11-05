@@ -51,10 +51,11 @@
 
 <div id="gate">
   <h1>🔒 Portfolio Admin</h1>
-  <p class="sub">Enter the admin password to continue.</p>
+  <p class="sub">Local unlock, then your GitHub token. See "Setup &amp; Security Notes" below once unlocked.</p>
   <input type="password" id="pw" placeholder="Password">
   <button class="btn primary" id="pwSubmit">Unlock</button>
   <p class="hint" id="gateMsg"></p>
+  <p class="hint" id="firstRunHint" style="display:none;max-width:320px;text-align:center;">No password set yet on this device — type one now to set it (stored only in this browser).</p>
 </div>
 
 <div id="app">
@@ -71,7 +72,20 @@
   </div>
 
   <div class="wrap">
-    <p class="sub"><strong>Save Draft</strong> previews changes on this browser only. <strong>Publish to GitHub</strong> commits them directly to your repository so the live site updates for everyone. <strong>Export data.json</strong> is a manual backup/alternative. See full setup notes at the bottom.</p>
+    <p class="sub"><strong>Save Draft</strong> previews changes on this browser only. <strong>Publish to GitHub</strong> triggers a GitHub Actions workflow that commits them directly to your repository so the live site updates for everyone. <strong>Export data.json</strong> is a manual backup/alternative. See full setup notes at the bottom.</p>
+
+    <h2>GitHub Connection</h2>
+    <div class="card" id="githubCard">
+      <div class="row">
+        <div><label>Repo owner (your GitHub username)</label><input id="ghOwner" placeholder="e.g. xxSBQxx"></div>
+        <div><label>Repo name</label><input id="ghRepo" placeholder="e.g. portfolio"></div>
+        <div><label>Branch</label><input id="ghBranch" placeholder="main" value="main"></div>
+      </div>
+      <label>Fine-grained Personal Access Token (Contents: Read and write, scoped to this one repo only)</label>
+      <input id="ghToken" type="password" placeholder="github_pat_...">
+      <p class="hint">Saved only in this browser's localStorage. Never sent anywhere except api.github.com. Create one at github.com → Settings → Developer settings → Fine-grained tokens.</p>
+      <div class="item-actions"><button class="btn small" id="ghSaveBtn">Save connection</button><span class="hint" id="ghSavedMsg"></span></div>
+    </div>
 
     <h2>Profile &amp; Summary</h2>
     <div class="card" id="profileCard"></div>
@@ -99,10 +113,10 @@
 
     <h2>Setup &amp; Security Notes</h2>
     <div class="card" style="font-size:13px; color:var(--text-muted); line-height:1.7;">
-      <p><strong>How this works:</strong> login is verified by a small Cloudflare Worker that holds your real password (as a hash) and your GitHub token as server-side secrets — neither ever reaches this page or your browser's dev tools. A correct login returns a short-lived signed session token (2 hours).</p>
+      <p><strong>How this works now:</strong> there is no backend server. The password above is a local convenience lock only — stored (hashed) in this browser, easily bypassed by anyone with access to this device or this file's source. Your <strong>real access control is the GitHub token</strong> in the "GitHub Connection" card above: anyone who has it can write to your repo, so treat it like a password. Use a fine-grained token scoped to Contents: Read and write on this one repository only, never commit it, and revoke/regenerate it from GitHub if this device is ever lost or this admin.html is ever shared or exposed.</p>
       <p><strong>Save Draft</strong> stores your edits in this browser's <code>localStorage</code> for an instant local preview only — nothing is sent anywhere.</p>
-      <p><strong>Publish to GitHub</strong> sends your session token + the changed files to the Worker, which verifies the token, then uses the GitHub API to commit <code>data.json</code> (and any newly uploaded certificate images/PDFs, auto-placed under <code>assets/certs/</code>) directly to your repository in one atomic commit. GitHub Pages then rebuilds <code>syedburhanss.online</code> automatically — allow roughly 30–90 seconds.</p>
-      <p><strong>To enable this</strong>, you must first deploy the Worker and set <code>WORKER_URL</code> near the top of this file's script — see the full setup instructions provided with this delivery.</p>
+      <p><strong>Publish to GitHub</strong> sends the changed files (data.json, plus any newly uploaded certificate images/PDFs under <code>assets/certs/</code>) to GitHub's API as a <code>repository_dispatch</code> event, authenticated with your token. This triggers the <code>.github/workflows/publish-content.yml</code> workflow in your repo, which writes the files and commits + pushes them using GitHub's own built-in token — no other secrets needed. GitHub Pages then rebuilds <code>syedburhanss.online</code> automatically, usually within a minute. Check your repo's "Actions" tab to watch it run or see errors.</p>
+      <p><strong>One-time setup:</strong> this delivery already includes <code>.github/workflows/publish-content.yml</code> — just make sure it's committed to your repo's default branch. Then create the token (above), fill in owner/repo/branch, click "Save connection", and Publish will work.</p>
     </div>
   </div>
 </div>
@@ -110,49 +124,72 @@
 <script>
 (function () {
   'use strict';
-  // Set this to your deployed Worker URL (see worker/README-SETUP.md).
-  var WORKER_URL = 'https://portfolio-admin.YOUR-SUBDOMAIN.workers.dev';
   var LS_KEY = 'portfolio_cms_data';
-  var SESSION_KEY = 'admin_session_token';
+  var SESSION_KEY = 'admin_unlocked';
+  var PW_HASH_KEY = 'admin_pw_hash';
+  var GH_KEY = 'portfolio_gh_connection';
   var data = null;
 
-  /* ---------- gate: real server-verified login ---------- */
-  function getSession() {
-    try {
-      var raw = sessionStorage.getItem(SESSION_KEY);
-      if (!raw) return null;
-      var exp = Number(raw.split('.')[0]);
-      if (!exp || exp < Date.now()) return null;
-      return raw;
-    } catch (e) { return null; }
+  /* ---------- gate: local-only convenience lock (NOT real security — see Setup notes) ---------- */
+  function sha256Hex(str) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    });
   }
+  function getSession() {
+    try { return sessionStorage.getItem(SESSION_KEY) === '1'; } catch (e) { return false; }
+  }
+  var storedHash = null;
+  try { storedHash = localStorage.getItem(PW_HASH_KEY); } catch (e) {}
+  if (!storedHash) document.getElementById('firstRunHint').style.display = 'block';
+
   document.getElementById('pwSubmit').addEventListener('click', tryUnlock);
   document.getElementById('pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
   function tryUnlock() {
     var val = document.getElementById('pw').value;
-    var btn = document.getElementById('pwSubmit');
-    btn.disabled = true; btn.textContent = 'Checking…';
-    fetch(WORKER_URL + '/login', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: val }),
-    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (res) {
-        btn.disabled = false; btn.textContent = 'Unlock';
-        if (res.ok && res.j.token) { sessionStorage.setItem(SESSION_KEY, res.j.token); boot(); }
-        else { document.getElementById('gateMsg').textContent = res.j.error || 'Incorrect password.'; }
-      })
-      .catch(function () {
-        btn.disabled = false; btn.textContent = 'Unlock';
-        document.getElementById('gateMsg').textContent = 'Could not reach the admin server. Check WORKER_URL in admin.html and your connection.';
-      });
+    if (!val) { document.getElementById('gateMsg').textContent = 'Enter a password.'; return; }
+    sha256Hex(val).then(function (hash) {
+      if (!storedHash) {
+        try { localStorage.setItem(PW_HASH_KEY, hash); } catch (e) {}
+        sessionStorage.setItem(SESSION_KEY, '1'); boot();
+        return;
+      }
+      if (hash === storedHash) { sessionStorage.setItem(SESSION_KEY, '1'); boot(); }
+      else { document.getElementById('gateMsg').textContent = 'Incorrect password.'; }
+    });
   }
   document.getElementById('logoutBtn') && document.getElementById('logoutBtn').addEventListener('click', function () {
     sessionStorage.removeItem(SESSION_KEY); location.reload();
   });
   if (getSession()) boot();
 
+  /* ---------- GitHub connection settings ---------- */
+  function getGh() {
+    try { return JSON.parse(localStorage.getItem(GH_KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function fillGhForm() {
+    var g = getGh();
+    document.getElementById('ghOwner').value = g.owner || '';
+    document.getElementById('ghRepo').value = g.repo || '';
+    document.getElementById('ghBranch').value = g.branch || 'main';
+    document.getElementById('ghToken').value = g.token || '';
+  }
+  document.getElementById('ghSaveBtn').addEventListener('click', function () {
+    var g = {
+      owner: document.getElementById('ghOwner').value.trim(),
+      repo: document.getElementById('ghRepo').value.trim(),
+      branch: document.getElementById('ghBranch').value.trim() || 'main',
+      token: document.getElementById('ghToken').value.trim(),
+    };
+    localStorage.setItem(GH_KEY, JSON.stringify(g));
+    var m = document.getElementById('ghSavedMsg');
+    m.textContent = 'Saved.'; setTimeout(function () { m.textContent = ''; }, 2000);
+  });
+
   function boot() {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('app').style.display = 'block';
+    fillGhForm();
     loadData().then(function (d) { data = d; renderAll(); });
   }
 
@@ -196,8 +233,8 @@
   }
 
   document.getElementById('publishBtn').addEventListener('click', function () {
-    var session = getSession();
-    if (!session) { alert('Your session expired — please log out and log back in.'); return; }
+    var gh = getGh();
+    if (!gh.owner || !gh.repo || !gh.token) { alert('Fill in and save your GitHub connection (owner, repo, token) first — see the card above.'); return; }
     if (!confirm('Publish all current changes to GitHub now? This updates the live site.')) return;
 
     var publishBtn = document.getElementById('publishBtn');
@@ -227,28 +264,56 @@
 
     filesToCommit.push({ path: 'data.json', content_base64: b64EncodeUnicode(JSON.stringify(dataCopy, null, 2)) });
 
-    fetch(WORKER_URL + '/publish', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: session, message: 'Update portfolio content via admin CMS', files: filesToCommit }),
-    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (res) {
-        publishBtn.disabled = false;
-        if (res.ok && res.j.ok) {
-          data = dataCopy;
-          localStorage.removeItem(LS_KEY);
-          renderAll();
-          status.textContent = '● published — commit ' + res.j.commit.slice(0, 7);
-          alert('Published! Commit ' + res.j.commit.slice(0, 7) + '. The live site updates once GitHub Pages finishes rebuilding (usually under a minute).');
-        } else {
-          status.textContent = '● publish failed';
-          alert('Publish failed: ' + (res.j && res.j.error ? res.j.error : 'unknown error'));
-        }
-      })
-      .catch(function (e) {
-        publishBtn.disabled = false; status.textContent = '● publish failed';
-        alert('Publish failed: ' + e.message);
-      });
+    var dispatchedAt = Date.now();
+    fetch('https://api.github.com/repos/' + gh.owner + '/' + gh.repo + '/dispatches', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + gh.token,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        event_type: 'publish-content',
+        client_payload: { message: 'Update portfolio content via admin CMS', files: filesToCommit },
+      }),
+    }).then(function (r) {
+      if (r.status === 204) {
+        data = dataCopy;
+        localStorage.removeItem(LS_KEY);
+        renderAll();
+        status.textContent = '● triggered — watching Actions…';
+        pollRunStatus(gh, dispatchedAt, publishBtn, status);
+      } else {
+        return r.json().then(function (j) { throw new Error(j.message || ('GitHub returned ' + r.status)); });
+      }
+    }).catch(function (e) {
+      publishBtn.disabled = false; status.textContent = '● publish failed';
+      alert('Publish failed: ' + e.message + '\n\nCheck: token has Contents: Read and write on this exact repo, owner/repo spelling, and that .github/workflows/publish-content.yml is committed to the repo.');
+    });
   });
+
+  /* Poll the Actions API a few times so the admin sees real pass/fail, not just "sent". */
+  function pollRunStatus(gh, sinceMs, publishBtn, status) {
+    var tries = 0;
+    (function tick() {
+      tries++;
+      fetch('https://api.github.com/repos/' + gh.owner + '/' + gh.repo + '/actions/runs?event=repository_dispatch&per_page=5', {
+        headers: { 'Authorization': 'Bearer ' + gh.token, 'Accept': 'application/vnd.github+json' },
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        var run = (j.workflow_runs || []).find(function (wr) { return new Date(wr.created_at).getTime() >= sinceMs - 5000; });
+        if (!run && tries < 8) { setTimeout(tick, 3000); return; }
+        publishBtn.disabled = false;
+        if (!run) { status.textContent = '● triggered — check the Actions tab'; return; }
+        if (run.status !== 'completed' && tries < 8) { status.textContent = '● ' + run.status + '…'; setTimeout(tick, 3000); return; }
+        if (run.conclusion === 'success') {
+          status.textContent = '● published — live in ~1 min';
+        } else {
+          status.textContent = '● workflow ' + (run.conclusion || run.status);
+          alert('The publish workflow did not succeed (' + (run.conclusion || run.status) + '). Open it in the Actions tab for the error: ' + run.html_url);
+        }
+      }).catch(function () { publishBtn.disabled = false; status.textContent = '● triggered — check the Actions tab'; });
+    })();
+  }
   document.getElementById('exportBtn').addEventListener('click', function () {
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     var a = document.createElement('a');
